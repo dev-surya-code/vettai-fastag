@@ -1,0 +1,190 @@
+/* ---------- Body ---------- */
+.worker-login-container {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  animation: gradientMove 10s ease infinite;
+  background: linear-gradient(135deg, #006a7d, #00b7ff, #0070f3, #00eaff);
+  background-size: 400% 400%;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* ---------- Glass Card ---------- */
+.worker-login-container .login-card {
+  width: 380px;
+  border-radius: 16px;
+  padding: 2rem;
+  box-shadow: 0 0px 20px rgba(255, 255, 255, 0.579);
+  text-align: center;
+  color: #ffffff;
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+  animation: fadeIn 0.6s ease forwards;
+}
+
+.login-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 0px 20px rgba(255, 255, 255, 0.684);
+}
+
+/* ---------- Inputs ---------- */
+.worker-login-container .input-icon {
+  position: relative;
+  margin-bottom: 1.2rem;
+}
+
+.worker-login-container .input-icon .icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #000000;
+}
+
+.worker-login-container .input-icon input {
+  width: 100%;
+  padding: 10px 40px;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  color: rgb(0, 0, 0);
+  font-weight: bolder;
+  outline: none;
+  transition: all 0.3s ease;
+}
+
+.worker-login-container .input-icon input:focus {
+  background-color: white;
+  border-color: #ffffff;
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.697);
+}
+/* Password Toggle */
+.password-toggle {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #ffffff;
+}
+
+/* ---------- Blue Glow Button ---------- */
+.btn-glow {
+  background: #00478d;
+  color: #fff;
+  font-weight: 600;
+  border-radius: 12px;
+  width: 100%;
+  padding: 12px 0;
+  cursor: pointer;
+  border: none;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-glow:hover {
+  background: #0056b3;
+  box-shadow: 0 0 12px #00bfff, 0 0 20px #007bff;
+  transform: translateY(-2px) scale(1.03);
+}
+
+.btn-glow:active {
+  transform: scale(0.98);
+}
+
+/* ---------- Links Styled ---------- */
+.worker-login-container .link-glow {
+  color: #ffffff;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.worker-login-container .link-glow:hover {
+  color: #ffffff;
+}
+
+.worker-login-container .link-glow::after {
+  content: "";
+  display: block;
+  width: 0%;
+  height: 2px;
+  background: #ffffff;
+  transition: width 0.3s;
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+}
+
+.worker-login-container .link-glow:hover::after {
+  width: 100%;
+}
+
+/* ---------- Success/Error Message ---------- */
+.text-success {
+  color: #00ff5e;
+}
+.text-danger {
+  font-weight: bolder;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  color: #ff0000;
+  text-shadow: 0px 0px 5px rgba(255, 0, 0, 0.548);
+}
+.message {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin-top: 0.8rem;
+}
+
+/* ---------- Animations ---------- */
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 0.7;
+    transform: scale(0.95);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+  100% {
+    opacity: 0.7;
+    transform: scale(0.95);
+  }
+}
+
+@keyframes gradientMove {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}

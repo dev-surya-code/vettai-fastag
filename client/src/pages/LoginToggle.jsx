@@ -2,7 +2,8 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+const API_URL =
+  process.env.REACT_APP_API_URL || "https://vettai-fastag-backend.onrender.com";
 
 export default function LoginSingleButton() {
   const [role, setRole] = useState("worker"); // default role
@@ -24,8 +25,8 @@ export default function LoginSingleButton() {
     try {
       const url =
         role === "owner"
-          ? "http://localhost:5000/api/auth/owner/login"
-          : "http://localhost:5000/api/auth/worker/login";
+          ? `${API_URL}/api/auth/owner/login`
+          : `${API_URL}/api/auth/worker/login`;
 
       const res = await axios.post(url, form);
 

@@ -5,7 +5,7 @@ import Swal from "sweetalert2";
 import "../css/WorkerDashboard.css";
 import { FaClock, FaPowerOff, FaRegMoneyBillAlt } from "react-icons/fa";
 
-const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5000";
+const API_URL = process.env.REACT_APP_API_URL || "https://vettai-fastag-backend.onrender.com";
 
 export default function WorkerDashboard({ worker }) {
   const navigate = useNavigate();
@@ -96,7 +96,7 @@ export default function WorkerDashboard({ worker }) {
   };
   useEffect(() => {
     axios
-      .get("http://localhost:5000/api/transactions/all")
+      .get(`${API_URL}/api/transactions/all`)
       .then((res) => {
         // get unique vehicle numbers
         const vehicles = [...new Set(res.data.map((t) => t.vehicleNumber))];
@@ -185,7 +185,7 @@ export default function WorkerDashboard({ worker }) {
 
         // ✅ Update backend with new pending amount
         await axios.put(
-          `http://localhost:5000/api/transactions/updatePending/${txVehicle}`,
+          `${API_URL}/api/transactions/updatePending/${txVehicle}`,
           { newPending }
         );
 
@@ -346,7 +346,7 @@ export default function WorkerDashboard({ worker }) {
   // Fetch pending vehicles on mount
   useEffect(() => {
     axios
-      .get("http://localhost:5000/api/transactions/all")
+      .get(`${API_URL}/api/transactions/all`)
       .then((res) => {
         const vehicles = [...new Set(res.data.map((t) => t.vehicleNumber))];
 
@@ -413,7 +413,7 @@ export default function WorkerDashboard({ worker }) {
     const fetchSuggestions = async () => {
       try {
         const res = await axios.get(
-          `http://localhost:5000/api/transactions/all`
+          `${API_URL}/api/transactions/all`
         );
 
         const vehicles = [
@@ -424,7 +424,7 @@ export default function WorkerDashboard({ worker }) {
           vehicles.map(async (vehicle) => {
             try {
               const pendingRes = await axios.get(
-                `http://localhost:5000/api/transactions/pending/${vehicle}`
+                `${API_URL}/api/transactions/pending/${vehicle}`
               );
               return {
                 vehicle,
@@ -463,7 +463,7 @@ export default function WorkerDashboard({ worker }) {
     const interval = setInterval(() => {
       axios
         .get(
-          `http://localhost:5000/api/transactions/pending/${selectedVehicle}`
+          `${API_URL}/api/transactions/pending/${selectedVehicle}`
         )
         .then((res) => setPendingAmount(res.data.totalPending || 0))
         .catch(() => setPendingAmount(0));
@@ -478,7 +478,7 @@ export default function WorkerDashboard({ worker }) {
 
     try {
       const res = await axios.get(
-        `http://localhost:5000/api/transactions/pending/${vehicle}`
+        `${API_URL}/api/transactions/pending/${vehicle}`
       );
       setPendingAmount(parseFloat(res.data.totalPending || 0));
     } catch (err) {

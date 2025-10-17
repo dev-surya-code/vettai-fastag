@@ -1,0 +1,409 @@
+/* ------------------------------
+🌟 Worker Dashboard Ultimate Styling
+------------------------------ */
+
+/* ------------------------------
+✨ General Layout & Typography
+------------------------------ */
+body {
+  font-family: "Poppins", sans-serif;
+  background: linear-gradient(135deg, #f0f8ff, #e0f7ff);
+  color: #1e293b;
+  transition: background 0.5s ease;
+}
+
+h2,
+h4,
+h5 {
+  font-weight: 700;
+  color: #1e293b;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  position: relative;
+}
+
+h2::after,
+h4::after {
+  content: "";
+  display: block;
+  width: 60px;
+  height: 3px;
+  background: linear-gradient(90deg, #007bff, #00e0ff);
+  margin-top: 5px;
+  border-radius: 2px;
+  animation: slideIn 1.2s ease forwards;
+}
+
+/* Smooth fade-in for cards & tables */
+.card,
+.table tbody tr {
+  animation: fadeIn 0.8s ease;
+}
+
+/* ------------------------------
+🪄 Buttons & Hover Effects
+------------------------------ */
+.btn {
+  cursor: pointer;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-primary,
+.btn-warning,
+.btn-danger {
+  color: #fff;
+  border: none;
+}
+
+.btn:hover {
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 0 12px rgba(0, 180, 216, 0.8), 0 0 20px rgba(0, 180, 216, 0.5);
+}
+
+/* Neon rotating glow effect */
+.btn-glow::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: conic-gradient(
+    from 0deg,
+    #00b4d8,
+    #007bff,
+    #00e0ff,
+    #007bff,
+    #00b4d8
+  );
+  animation: glowRotate 4s linear infinite;
+  opacity: 0.2;
+  z-index: -1;
+  border-radius: 8px;
+}
+
+/* Hover scale & shadow for bank save buttons */
+.card .btn-success:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 15px rgba(40, 200, 120, 0.7);
+}
+
+/* ------------------------------
+💳 Cards & Bank Balances
+------------------------------ */
+.card {
+  border-radius: 15px;
+  border: none;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+.card h5 {
+  font-size: 1.2rem;
+  color: #007bff;
+  margin-bottom: 10px;
+}
+
+.card input:focus {
+  transform: scale(1.03);
+  box-shadow: 0 0 10px rgba(0, 180, 216, 0.5);
+  outline: none;
+}
+
+/* ------------------------------
+📊 Table Styling
+------------------------------ */
+.table {
+  border-radius: 10px;
+  overflow: hidden;
+  border: none;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+}
+
+.table th {
+  width: 220px;
+  background: linear-gradient(90deg, #007bff, #00b4d8);
+  color: white;
+  font-weight: 600;
+  border: none;
+}
+
+.table td {
+  vertical-align: middle;
+}
+.table tbody tr:hover {
+  background-color: #f1f9ff;
+  transform: translateX(2px);
+  transition: all 0.5s ease;
+}
+
+/* Highlight totals row with animation */
+.table-bordered tr:last-child td {
+  animation: highlightTotal 1.2s ease forwards;
+}
+
+@keyframes highlightTotal {
+  0% {
+    background-color: #e6f7ff;
+  }
+  50% {
+    background-color: #c0f0ff;
+  }
+  100% {
+    background-color: #e6f7ff;
+  }
+}
+
+/* ------------------------------
+🔮 Inputs & Forms
+------------------------------ */
+input:focus,
+select:focus {
+  border-color: #00b4d8;
+  box-shadow: 0 0 8px rgba(0, 180, 216, 0.5);
+  outline: none;
+  transition: all 0.3s ease;
+}
+
+input.glow,
+select.glow {
+  border: 2px solid #007bff;
+  box-shadow: 0 0 8px #00b4d8;
+  transition: all 0.3s ease;
+}
+
+/* Floating label effect */
+input:focus + label,
+input:not(:placeholder-shown) + label {
+  top: -10px;
+  font-size: 0.8rem;
+  color: #007bff;
+}
+
+/* ------------------------------
+🚗 Vehicle Suggestions Dropdown
+------------------------------ */
+.list-group {
+  max-height: 220px;
+  overflow-y: auto;
+  border-radius: 8px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.list-group-item {
+  transition: all 0.2s ease;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+}
+
+.list-group-item:hover {
+  background: linear-gradient(90deg, #007bff22, #00e0ff22);
+  transform: translateX(5px);
+}
+
+/* Smooth scrollbar */
+.list-group::-webkit-scrollbar {
+  width: 6px;
+}
+.list-group::-webkit-scrollbar-thumb {
+  background: #00b4d8;
+  border-radius: 3px;
+}
+.list-group::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+/* ------------------------------
+🪟 Modals
+------------------------------ */
+.modal-content {
+  border-radius: 12px;
+  overflow: hidden;
+  animation: popUp 0.4s ease;
+}
+
+.modal-header {
+  background: linear-gradient(90deg, #007bff, #00b4d8);
+  color: white;
+}
+
+.modal-footer .btn {
+  border-radius: 6px;
+  position: relative;
+  overflow: hidden;
+}
+
+.modal-footer .btn::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: conic-gradient(
+    from 0deg,
+    #00b4d8,
+    #007bff,
+    #00e0ff,
+    #007bff,
+    #00b4d8
+  );
+  animation: glowRotate 4s linear infinite;
+  opacity: 0.2;
+  z-index: -1;
+  border-radius: 8px;
+}
+
+/* ------------------------------
+🌈 Animations & Keyframes
+------------------------------ */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes popUp {
+  from {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    width: 0;
+    opacity: 0;
+  }
+  to {
+    width: 80px;
+    opacity: 1;
+  }
+}
+
+@keyframes glowRotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.7;
+  }
+}
+
+@keyframes bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Pending Amount Animations */
+.text-danger.animate-pulse {
+  animation: pulse 1s infinite;
+}
+.text-success.animate-bounce {
+  animation: bounce 1s infinite;
+}
+
+/* ------------------------------
+📱 Responsive Design
+------------------------------ */
+@media (max-width: 992px) {
+  .row {
+    flex-direction: column;
+  }
+  .btn {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+  .card {
+    margin-bottom: 15px;
+  }
+}
+
+@media (max-width: 576px) {
+  .table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+  .totals {
+    width: 100%;
+    overflow-x: auto;
+  }
+  .row.col-md-12.p-3 {
+    flex-direction: column;
+    gap: 10px;
+  }
+}
+
+/* ------------------------------
+🔧 Utility Classes
+------------------------------ */
+.mt-2 {
+  margin-top: 0.5rem;
+}
+.mt-4 {
+  margin-top: 1.5rem;
+}
+.mb-2 {
+  margin-bottom: 0.5rem;
+}
+.mb-3 {
+  margin-bottom: 1rem;
+}
+.mb-4 {
+  margin-bottom: 1.5rem;
+}
+.fw-bolder {
+  font-weight: 700;
+}
+.text-end {
+  text-align: right;
+}

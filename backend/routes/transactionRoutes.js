@@ -96,16 +96,32 @@ router.delete("/:id", async (req, res) => {
     res.status(500).json({ message: "Error deleting transaction" });
   }
 });
-router.delete("/vehicle/:vehicleNumber", async (req, res) => {
+router.delete("/delete-specific", async (req, res) => {
   try {
-    const { vehicleNumber } = req.params;
-    const result = await Transaction.deleteMany({ vehicleNumber });
-    if (result.deletedCount === 0)
-      return res.status(404).json({ message: "No transactions found" });
-    res.json({ message: "Transactions deleted successfully" });
+    const { vehicleNumber, transactionType, amount, paymentType } = req.body;
+
+    if (!vehicleNumber || !transactionType || !amount || !paymentType) {
+      return res.status(400).json({ message: "Missing required fields." });
+    }
+
+    // Find and delete one matching record
+    const result = await Transaction.findOneAndDelete({
+      vehicleNumber,
+      transactionType,
+      amount,
+      paymentType,
+    });
+
+    if (!result) {
+      return res.status(404).json({ message: "Transaction not found." });
+    }
+
+    res.json({ message: "Transaction deleted successfully." });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error("Delete error:", err);
+    res.status(500).json({ message: "Server error during deletion." });
   }
 });
 
 export default router;
+

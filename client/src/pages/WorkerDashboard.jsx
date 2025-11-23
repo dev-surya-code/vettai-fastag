@@ -22,6 +22,7 @@ export default function WorkerDashboard({ worker }) {
   const [liveInterval, setLiveInterval] = useState(null);
   const [allVehicles, setAllVehicles] = useState([]);
   const [shiftType, setShiftType] = useState("");
+  const [vehicleInputFocused, setVehicleInputFocused] = useState(false);
 
   const inputRef = useRef(null);
   const initialBanks = [
@@ -63,6 +64,10 @@ export default function WorkerDashboard({ worker }) {
     "BANK OF BARODA",
     "IDBI BANK",
     "FEDRAL BANK",
+    "IDFC TAG",
+    "SBI TAG",
+    "INDUS TAG",
+    "AIRTEL TAG",
     "BAJAJ PAY",
     "LIVQUIK FASTAG",
     "OTHERS FASTAG",
@@ -475,16 +480,21 @@ export default function WorkerDashboard({ worker }) {
 
   const handleSelectSuggestion = async (vehicle) => {
     setVehicleNumber(vehicle);
+
+    setTransactionForm((prev) => ({
+      ...prev,
+      vehicleNumber: vehicle,
+    }));
+
+    setSuggestions([]); // hide dropdown
     setSelectedVehicle(vehicle);
-    setSuggestions([]);
 
     try {
       const res = await axios.get(
         `${API_URL}/api/transactions/pending/${vehicle}`
       );
       setPendingAmount(parseFloat(res.data.totalPending || 0));
-    } catch (err) {
-      console.error("Error fetching pending amount:", err);
+    } catch {
       setPendingAmount(0);
     }
   };
@@ -876,8 +886,13 @@ export default function WorkerDashboard({ worker }) {
                 className="form-control"
                 placeholder="Enter Vehicle Number..."
                 value={vehicleNumber}
+                onFocus={() => setVehicleInputFocused(true)}
+                onBlur={() => {
+                  setTimeout(() => setVehicleInputFocused(false), 150);
+                }}
                 onChange={(e) => handleVehicleChange(e.target.value)}
               />
+
               {vehicleNumber && (
                 <div
                   className={`mt-2 fw-bold ${
@@ -888,36 +903,41 @@ export default function WorkerDashboard({ worker }) {
                 </div>
               )}
 
-              {vehicleNumber && suggestions.length > 0 && (
-                <ul
-                  className="list-group position-absolute w-100 shadow-lg"
-                  style={{
-                    zIndex: 2000,
-                    maxHeight: "220px",
-                    overflowY: "auto",
-                    backgroundColor: "#fff",
-                    borderRadius: "8px",
-                  }}
-                >
-                  {suggestions.map((item, i) => (
-                    <li
-                      key={i}
-                      className="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
-                      style={{ cursor: "pointer" }}
-                      onClick={() => handleSelectSuggestion(item.vehicle)}
-                    >
-                      <span>{item.vehicle}</span>
-                      <span
-                        className={`fw-bold ${
-                          item.pending > 0 ? "text-danger" : "text-success"
-                        }`}
+              {vehicleInputFocused &&
+                vehicleNumber &&
+                suggestions.length > 0 && (
+                  <ul
+                    className="list-group position-absolute w-100 shadow-lg"
+                    style={{
+                      zIndex: 2000,
+                      maxHeight: "220px",
+                      overflowY: "auto",
+                      backgroundColor: "#fff",
+                      borderRadius: "8px",
+                    }}
+                  >
+                    {suggestions.map((item, i) => (
+                      <li
+                        key={i}
+                        className="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
+                        style={{ cursor: "pointer" }}
+                        onMouseDown={(e) => {
+                          e.preventDefault(); // prevents input from losing focus
+                          handleSelectSuggestion(item.vehicle);
+                        }}
                       >
-                        ₹{Number(item.pending || 0).toFixed(2)}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-              )}
+                        <span>{item.vehicle}</span>
+                        <span
+                          className={`fw-bold ${
+                            item.pending > 0 ? "text-danger" : "text-success"
+                          }`}
+                        >
+                          ₹{Number(item.pending || 0).toFixed(2)}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
             </div>
             <datalist id="vehicleSuggestions">
               {[...new Set(transactions.map((t) => t.vehicleNumber))].map(

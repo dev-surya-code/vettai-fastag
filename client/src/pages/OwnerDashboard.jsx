@@ -60,6 +60,9 @@ export default function OwnerDashboard() {
   const [selectedShiftIndex, setSelectedShiftIndex] = useState(null);
   const [editingDateIndex, setEditingDateIndex] = useState(null);
   const [tempDate, setTempDate] = useState("");
+  const [editingWorkerIndex, setEditingWorkerIndex] = useState(null);
+  const [editingField, setEditingField] = useState(null); // "loginTime" or "shiftCloseTime"
+  const [tempWorkerDate, setTempWorkerDate] = useState("");
 
   const tableRef = useRef(null);
   const inputRef = useRef(null);
@@ -1858,15 +1861,25 @@ export default function OwnerDashboard() {
           margin: [0, 20, 0, 0],
           stack: [
             {
-              text: "***END OF SHIFT SUMMARY***",
+              text: "***END OF STATEMENT***",
               alignment: "center",
               bold: true,
+              fontSize: 11,
+              margin: [0, 10, 20, 20],
             },
             {
-              text: "Generated On: " + new Date().toLocaleString(),
-              alignment: "center",
+              text: "* This is computer generated statement and hence does not require signature.",
               fontSize: 10,
-              margin: [0, 5, 0, 0],
+            },
+            {
+              text: "* Customer Contact Center Number: 9751926006, 9943252055",
+              fontSize: 10,
+              margin: [0, 5, 0, 20],
+            },
+            {
+              text: `Generated On: ${new Date().toLocaleString()}`,
+              alignment: "center",
+              fontSize: 11,
             },
           ],
         },
@@ -1883,6 +1896,94 @@ export default function OwnerDashboard() {
     const d = new Date(date);
     return d.toISOString().slice(0, 16); // yyyy-MM-ddTHH:mm
   };
+  const formatWorkerDate = (date) => {
+    const d = new Date(date);
+    return d.toISOString().slice(0, 16); // yyyy-MM-ddTHH:mm
+  };
+  const handleWorkerStartEdit = (field, record, index) => {
+    setEditingWorkerIndex(index);
+    setEditingField(field);
+    setTempWorkerDate(formatWorkerDate(record[field]));
+  };
+  // SAVE DATE CHANGE for WORKER LOGIN
+  const handleWorkerConfirm = async (record, index) => {
+    const updatedValue = tempWorkerDate;
+
+    // Update UI (records table)
+    setRecords((prev) =>
+      prev.map((r, idx) =>
+        idx === index ? { ...r, [editingField]: updatedValue } : r
+      )
+    );
+
+    // ⭐ Critical: Sync with shiftRecords (used by popup)
+    setShiftRecords((prev) =>
+      prev.map((r) => {
+        const sameWorker =
+          r.worker === record.worker && r.shiftType === record.shiftType;
+
+        const sameDate =
+          new Date(r.loginTime).toISOString().split("T")[0] ===
+          new Date(record.loginTime).toISOString().split("T")[0];
+
+        if (sameWorker && sameDate) {
+          return { ...r, [editingField]: updatedValue };
+        }
+        return r;
+      })
+    );
+
+    setEditingWorkerIndex(null);
+    setEditingField(null);
+
+    try {
+      await axios.put(`${API_URL}/api/auth/owner/updateWorkerDate`, {
+        worker: record.worker,
+        shiftType: record.shiftType,
+        oldLoginTime: record.loginTime, // for matching
+        loginTime:
+          editingField === "loginTime" ? updatedValue : record.loginTime,
+        shiftCloseTime:
+          editingField === "shiftCloseTime"
+            ? updatedValue
+            : record.shiftCloseTime,
+      });
+
+      console.log("UPDATE REQUEST BODY:", {
+        loginTime:
+          editingField === "loginTime" ? updatedValue : record.loginTime,
+        shiftCloseTime:
+          editingField === "shiftCloseTime"
+            ? updatedValue
+            : record.shiftCloseTime,
+      });
+
+      Swal.fire({
+        icon: "success",
+        title: "Date Updated Successfully",
+        timer: 1500,
+        toast: true,
+        position: "top-end",
+        showConfirmButton: false,
+      });
+    } catch (err) {
+      console.error(err);
+      Swal.fire({
+        icon: "error",
+        title: "Failed to update date",
+        timer: 1500,
+        toast: true,
+        position: "top-end",
+        showConfirmButton: false,
+      });
+    }
+  };
+
+  const handleWorkerCancel = () => {
+    setEditingWorkerIndex(null);
+    setEditingField(null);
+  };
+
   // When clicking a date cell
   const handleStartEdit = (currentDate, index) => {
     setEditingDateIndex(index);
@@ -1893,21 +1994,30 @@ export default function OwnerDashboard() {
   const handleConfirmDate = async (index) => {
     const newDate = tempDate;
 
-    // Update UI instantly
+    // Update UI for popup
     setSelectedVehicleData((prev) => {
       const updated = [...prev];
       updated[index].createdAt = newDate;
       return updated;
     });
 
-    setEditingDateIndex(null); // close edit mode
+    // Update main transactions → needed for PDF
+    setTransactions((prev) =>
+      prev.map((t) =>
+        t._id === selectedVehicleData[index]._id
+          ? { ...t, createdAt: newDate }
+          : t
+      )
+    );
 
-    // OPTIONAL: Update backend
+    setEditingDateIndex(null);
+
     try {
       await axios.put(`${API_URL}/api/transactions/updateDate`, {
         id: selectedVehicleData[index]._id,
         createdAt: newDate,
       });
+
       Swal.fire({
         icon: "success",
         title: "Date updated",
@@ -2737,18 +2847,30 @@ export default function OwnerDashboard() {
                   <td
                     style={{ cursor: "pointer", color: "blue" }}
                     onClick={() => {
-                      const isSameDate = (d1, d2) => {
-                        const date1 = new Date(d1).toISOString().split("T")[0];
-                        const date2 = new Date(d2).toISOString().split("T")[0];
-                        return date1 === date2;
+                      const sameDate = (d1, d2) => {
+                        const a = new Date(d1);
+                        const b = new Date(d2);
+
+                        return (
+                          a.getFullYear() === b.getFullYear() &&
+                          a.getMonth() === b.getMonth() &&
+                          a.getDate() === b.getDate()
+                        );
                       };
 
-                      const rec = shiftRecords.find(
-                        (r) =>
+                      // ⭐ MATCH ONLY BY WORKER + SHIFT TYPE + LOGIN DATE (NOT TIME)
+                      const rec = shiftRecords.find((r) => {
+                        const login1 = new Date(r.loginTime);
+                        const login2 = new Date(s.loginTime);
+
+                        return (
                           r.worker === s.worker &&
                           r.shiftType === s.shiftType &&
-                          isSameDate(r.loginTime, s.loginTime)
-                      );
+                          login1.getFullYear() === login2.getFullYear() &&
+                          login1.getMonth() === login2.getMonth() &&
+                          login1.getDate() === login2.getDate()
+                        );
+                      });
 
                       if (!rec) {
                         console.log("NO MATCH FOUND FOR:", s);
@@ -2774,15 +2896,82 @@ export default function OwnerDashboard() {
                     </span>
                   </td>
 
-                  <td>
-                    {s.loginTime
-                      ? new Date(s.loginTime).toLocaleString()
-                      : "--"}
+                  <td style={{ cursor: "pointer" }}>
+                    {editingWorkerIndex === i &&
+                    editingField === "loginTime" ? (
+                      <div className="d-flex align-items-center gap-2">
+                        <input
+                          type="datetime-local"
+                          value={tempWorkerDate}
+                          onChange={(e) => setTempWorkerDate(e.target.value)}
+                          className="form-control form-control-sm"
+                          autoFocus
+                        />
+
+                        <button
+                          className="btn btn-success btn-sm"
+                          onClick={() => handleWorkerConfirm(s, i)}
+                        >
+                          ✓
+                        </button>
+
+                        <button
+                          className="btn btn-danger btn-sm"
+                          onClick={handleWorkerCancel}
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    ) : (
+                      <span
+                        onClick={() => handleWorkerStartEdit("loginTime", s, i)}
+                        style={{ display: "inline-block", width: "100%" }}
+                      >
+                        {s.loginTime
+                          ? new Date(s.loginTime).toLocaleString()
+                          : "--"}
+                      </span>
+                    )}
                   </td>
-                  <td>
-                    {s.shiftCloseTime
-                      ? new Date(s.shiftCloseTime).toLocaleString()
-                      : "--"}
+
+                  <td style={{ cursor: "pointer" }}>
+                    {editingWorkerIndex === i &&
+                    editingField === "shiftCloseTime" ? (
+                      <div className="d-flex align-items-center gap-2">
+                        <input
+                          type="datetime-local"
+                          value={tempWorkerDate}
+                          onChange={(e) => setTempWorkerDate(e.target.value)}
+                          className="form-control form-control-sm"
+                          autoFocus
+                        />
+
+                        <button
+                          className="btn btn-success btn-sm"
+                          onClick={() => handleWorkerConfirm(s, i)}
+                        >
+                          ✓
+                        </button>
+
+                        <button
+                          className="btn btn-danger btn-sm"
+                          onClick={handleWorkerCancel}
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    ) : (
+                      <span
+                        onClick={() =>
+                          handleWorkerStartEdit("shiftCloseTime", s, i)
+                        }
+                        style={{ display: "inline-block", width: "100%" }}
+                      >
+                        {s.shiftCloseTime
+                          ? new Date(s.shiftCloseTime).toLocaleString()
+                          : "--"}
+                      </span>
+                    )}
                   </td>
                 </tr>
               ))

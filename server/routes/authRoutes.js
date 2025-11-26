@@ -7,6 +7,7 @@ import Activity from "../models/Activity.js";
 import nodemailer from "nodemailer";
 import Transaction from "../models/Transaction.js";
 import ShiftRecord from "../models/ShiftRecord.js";
+import WorkerLoginRecord from "../models/WorkerLoginRecord.js";
 import Shift from "../models/Shift.js";
 
 const router = express.Router();
@@ -158,7 +159,7 @@ router.post("/workers/shiftclose", async (req, res) => {
     await ShiftRecord.create({
       worker,
       shiftType,
-      closedTime,
+      shiftCloseTime: closedTime,
       logoutTime,
       bankBalances,
       totalsByPaymentType,
@@ -373,4 +374,79 @@ router.post("/reset-password/:token", async (req, res) => {
       .json({ msg: "Something went wrong while resetting password." });
   }
 });
+router.put("/owner/updateWorkerDate", async (req, res) => {
+  console.log("UPDATE ROUTE HIT");
+  console.log("REQ BODY:", req.body);
+
+  try {
+    const { worker, shiftType, oldLoginTime, loginTime, shiftCloseTime } =
+      req.body;
+
+    if (!worker || !shiftType || !oldLoginTime) {
+      return res.status(400).json({
+        message: "Missing worker, shiftType or oldLoginTime",
+      });
+    }
+
+    // Convert dates
+    const oldDate = new Date(oldLoginTime);
+
+    // 🔥 Match only by DATE (not TIME)
+    const start = new Date(
+      oldDate.getFullYear(),
+      oldDate.getMonth(),
+      oldDate.getDate(),
+      0,
+      0,
+      0
+    );
+    const end = new Date(
+      oldDate.getFullYear(),
+      oldDate.getMonth(),
+      oldDate.getDate(),
+      23,
+      59,
+      59
+    );
+
+    // 🔥 FIND the shift record by worker + shiftType + loginDate
+    const record = await ShiftRecord.findOne({
+      worker,
+      shiftType,
+      loginTime: { $gte: start, $lte: end },
+    });
+
+    if (!record) {
+      console.log("❌ No ShiftRecord found for:", {
+        worker,
+        shiftType,
+        oldLoginTime,
+      });
+      return res.status(404).json({ message: "Record not found" });
+    }
+
+    console.log("✅ SHIFT RECORD FOUND:", record._id);
+
+    // 🔥 Update loginTime or shiftCloseTime
+    if (loginTime) {
+      record.loginTime = new Date(loginTime);
+    }
+
+    if (shiftCloseTime) {
+      record.shiftCloseTime = new Date(shiftCloseTime);
+    }
+
+    await record.save();
+
+    return res.json({
+      message: "Shift updated successfully",
+      updated: record,
+    });
+  } catch (err) {
+    console.error("Update Worker Error:", err);
+    return res.status(500).json({ message: "Server Error" });
+  }
+});
+
+
 export default router;

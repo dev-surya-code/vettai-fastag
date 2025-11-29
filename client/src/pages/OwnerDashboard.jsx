@@ -63,6 +63,7 @@ export default function OwnerDashboard() {
   const [editingWorkerIndex, setEditingWorkerIndex] = useState(null);
   const [editingField, setEditingField] = useState(null); // "loginTime" or "shiftCloseTime"
   const [tempWorkerDate, setTempWorkerDate] = useState("");
+  const [originalLoginTime, setOriginalLoginTime] = useState(null);
 
   const tableRef = useRef(null);
   const inputRef = useRef(null);
@@ -1903,8 +1904,14 @@ export default function OwnerDashboard() {
   const handleWorkerStartEdit = (field, record, index) => {
     setEditingWorkerIndex(index);
     setEditingField(field);
+
+    // ⬅ Store ORIGINAL unmodified loginTime before editing
+    setOriginalLoginTime(record.loginTime);
+
+    // Set temporary value for input box
     setTempWorkerDate(formatWorkerDate(record[field]));
   };
+
   // SAVE DATE CHANGE for WORKER LOGIN
   const handleWorkerConfirm = async (record, index) => {
     const updatedValue = tempWorkerDate;
@@ -1940,7 +1947,7 @@ export default function OwnerDashboard() {
       await axios.put(`${API_URL}/api/auth/owner/updateWorkerDate`, {
         worker: record.worker,
         shiftType: record.shiftType,
-        oldLoginTime: record.loginTime, // for matching
+        oldLoginTime: originalLoginTime,
         loginTime:
           editingField === "loginTime" ? updatedValue : record.loginTime,
         shiftCloseTime:
@@ -2835,14 +2842,14 @@ export default function OwnerDashboard() {
             </tr>
           </thead>
           <tbody>
-            {records.length === 0 ? (
+            {shiftRecords.length === 0 ? (
               <tr>
                 <td colSpan="5" className="text-center text-danger fw-bold">
                   No shift records found
                 </td>
               </tr>
             ) : (
-              records.map((s, i) => (
+              shiftRecords.map((s, i) => (
                 <tr key={i}>
                   <td
                     style={{ cursor: "pointer", color: "blue" }}
@@ -2868,7 +2875,8 @@ export default function OwnerDashboard() {
                           r.shiftType === s.shiftType &&
                           login1.getFullYear() === login2.getFullYear() &&
                           login1.getMonth() === login2.getMonth() &&
-                          login1.getDate() === login2.getDate()
+                          login1.getDate() === login2.getDate() &&
+                          login1.getHours() === login2.getHours()
                         );
                       });
 

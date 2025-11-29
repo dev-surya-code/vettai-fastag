@@ -375,7 +375,6 @@ router.post("/reset-password/:token", async (req, res) => {
   }
 });
 router.put("/owner/updateWorkerDate", async (req, res) => {
-  console.log("UPDATE ROUTE HIT");
   console.log("REQ BODY:", req.body);
 
   try {
@@ -398,15 +397,18 @@ router.put("/owner/updateWorkerDate", async (req, res) => {
       oldDate.getDate(),
       0,
       0,
+      0,
       0
     );
+
     const end = new Date(
       oldDate.getFullYear(),
       oldDate.getMonth(),
       oldDate.getDate(),
       23,
       59,
-      59
+      59,
+      999
     );
 
     // 🔥 FIND the shift record by worker + shiftType + loginDate
@@ -425,7 +427,7 @@ router.put("/owner/updateWorkerDate", async (req, res) => {
       return res.status(404).json({ message: "Record not found" });
     }
 
-    console.log("✅ SHIFT RECORD FOUND:", record._id);
+    console.log("✅ SHIFT RECORD FOUND:", record);
 
     // 🔥 Update loginTime or shiftCloseTime
     if (loginTime) {
@@ -447,6 +449,5 @@ router.put("/owner/updateWorkerDate", async (req, res) => {
     return res.status(500).json({ message: "Server Error" });
   }
 });
-
 
 export default router;

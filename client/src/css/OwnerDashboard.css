@@ -1,0 +1,178 @@
+/* 🌟 Popup Overlay */
+.popup-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10000;
+  backdrop-filter: blur(3px);
+  animation: fadeIn 0.3s ease;
+}
+
+/* 💠 Popup Card */
+.popup-card {
+  background: white;
+  border-radius: 16px;
+  padding: 2rem;
+  width: 90%;
+  max-width: 420px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+  animation: slideUp 0.35s ease;
+}
+
+/* ✨ Popup Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes slideUp {
+  from {
+    transform: translateY(40px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* 🎨 Buttons */
+.popup-card .btn-success {
+  background-color: #0078ff;
+  border: none;
+  transition: all 0.25s ease;
+}
+.popup-card .btn-success:hover {
+  background-color: #005fcc;
+  transform: scale(1.05);
+}
+
+.popup-card .btn-secondary:hover {
+  transform: scale(1.05);
+}
+
+/* 📱 Responsive Popup */
+@media (max-width: 480px) {
+  .popup-card {
+    width: 95%;
+    padding: 1.2rem;
+  }
+  .popup-card h4 {
+    font-size: 1.1rem;
+  }
+  .popup-card .btn {
+    width: 100%;
+  }
+}
+/* ---------- Overlay ---------- */
+.shift-popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(5px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 99999 !important;
+  padding: 15px;
+}
+
+/* ---------- Popup Card ---------- */
+.shift-popup-card {
+  background: #ffffff;
+  width: 95%;
+  max-width: 850px;
+  max-height: 90vh;
+  overflow-y: auto;
+  border-radius: 14px;
+  padding: 25px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
+  animation: popupFade 0.25s ease-in-out;
+}
+
+/* Smooth animation */
+@keyframes popupFade {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* ---------- Titles ---------- */
+.popup-title {
+  font-size: 1.4rem;
+  color: #003366;
+  text-shadow: 0px 1px 2px #d5d5d5;
+}
+
+.section-title {
+  font-size: 1.1rem;
+  margin-top: 20px;
+  font-weight: bold;
+  color: #00509e;
+}
+
+/* ---------- Tables ---------- */
+.popup-table th {
+  text-align: center;
+  font-size: 0.9rem;
+}
+
+.popup-table td {
+  text-align: center;
+  font-size: 0.9rem;
+  vertical-align: middle;
+}
+
+/* Amount Colors */
+.amount-green {
+  font-weight: bold;
+  color: green;
+}
+
+.amount-red {
+  font-weight: bold;
+  color: red;
+}
+
+/* ---------- Mobile Optimization ---------- */
+@media (max-width: 600px) {
+  .shift-popup-card {
+    padding: 15px;
+  }
+
+  .popup-title {
+    font-size: 1.2rem;
+  }
+
+  .section-title {
+    font-size: 1rem;
+  }
+
+  .popup-table th,
+  .popup-table td {
+    font-size: 0.8rem;
+  }
+
+  .btn-lg {
+    font-size: 0.9rem;
+    padding: 8px;
+  }
+}
+.swal2-container {
+  z-index: 999999 !important;
+}
+  

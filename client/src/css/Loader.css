@@ -1,0 +1,88 @@
+/* Elegant centered loader with spinner and fading logo */
+
+.loader-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: radial-gradient(circle at center, #0f2027, #203a43, #2c5364);
+  overflow: hidden;
+}
+
+.loader-content {
+  position: relative;
+  width: 160px;
+  height: 160px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.spinner {
+  position: absolute;
+  width: 80px;
+  height: 80px;
+  border: 6px solid rgba(255, 255, 255, 0.15);
+  border-top-color: #00eaff;
+  border-radius: 50%;
+  animation: spin 1.2s linear infinite, glowSpin 2s ease-in-out infinite;
+  filter: drop-shadow(0 0 6px rgba(0, 234, 255, 0.5));
+}
+
+.loader-logo {
+  width: 90px;
+  height: 90px;
+  object-fit: contain;
+  animation: fadeInOut 2.5s ease-in-out infinite;
+  z-index: 10;
+}
+
+.loading-text {
+  margin-top: 45px;
+  font-size: 1.2rem;
+  font-family: "Poppins", sans-serif;
+  color: #ffffffcc;
+  letter-spacing: 1.5px;
+  animation: fadeText 2s ease-in-out infinite;
+}
+
+/* ✨ Keyframes */
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes glowSpin {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 5px #00eaff);
+  }
+  50% {
+    filter: drop-shadow(0 0 20px #00eaff);
+  }
+}
+
+@keyframes fadeInOut {
+  0%,
+  100% {
+    opacity: 0.4;
+    transform: scale(0.95);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+}
+
+@keyframes fadeText {
+  0%,
+  100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 1;
+  }
+}
